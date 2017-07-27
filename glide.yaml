@@ -1,0 +1,33 @@
+package: .
+import:
+- package: app
+- package: github.com/gizak/termui
+  version: ^2.2.0
+  subpackages:
+  - debug
+- package: github.com/maruel/panicparse
+  subpackages:
+  - internal
+  - stack
+- package: github.com/mattn/go-colorable
+  version: ^0.0.8
+- package: github.com/mattn/go-isatty
+  version: ^0.0.2
+- package: github.com/mattn/go-runewidth
+  version: ^0.0.2
+- package: github.com/mgutz/ansi
+- package: github.com/mitchellh/go-wordwrap
+- package: github.com/nsf/termbox-go
+- package: golang.org/x/net
+  subpackages:
+  - websocket
+testImport:
+- package: github.com/davecgh/go-spew
+  version: ^1.1.0
+  subpackages:
+  - spew
+- package: github.com/maruel/ut
+- package: github.com/stretchr/testify
+  version: ^1.1.4
+  subpackages:
+  - assert
