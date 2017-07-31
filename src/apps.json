@@ -1,0 +1,8 @@
+[
+  {
+    "name": "service_name_1",
+    "url": "http://localhost:5000/api/ping",
+    "timeout": 2,
+    "interval": 3
+  }
+]

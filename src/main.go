@@ -2,10 +2,31 @@ package main
 
 import (
 	"app"
+	"encoding/json"
 	"fmt"
 	"github.com/gizak/termui"
 	"health_checker"
+	"io/ioutil"
+	"os"
 )
+
+
+
+type Config struct {
+
+}
+
+func getApps() []app.Application{
+	raw, err := ioutil.ReadFile("apps.json")
+	    if err != nil {
+	        fmt.Println(err.Error())
+	        os.Exit(1)
+	    }
+
+	    var c []app.Application
+	    json.Unmarshal(raw, &c)
+	    return c
+}
 
 func main() {
 	ch := make(chan *app.AppHealth, 200)
@@ -23,6 +44,13 @@ func main() {
 
 	map_app := make(map[string]*app.Application)
 	health_check := health.HealthCheck{map_app}
+
+	apps := getApps()
+
+	for _, p := range apps {
+		fmt.Println(p.Name)
+	}
+
 	application := app.Application{Name: "Service Name", Url: "http://localhost:5000/api/ping"}
 	health_check.AddApp(&application)
 
