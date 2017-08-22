@@ -10,27 +10,20 @@ import (
 	"os"
 )
 
-
-
-type Config struct {
-
-}
-
-func getApps() []app.Application{
+func getApps() []app.Application {
 	raw, err := ioutil.ReadFile("apps.json")
-	    if err != nil {
-	        fmt.Println(err.Error())
-	        os.Exit(1)
-	    }
-
-	    var c []app.Application
-	    json.Unmarshal(raw, &c)
-	    return c
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	var c []app.Application
+	json.Unmarshal(raw, &c)
+	return c
 }
 
 func main() {
 	ch := make(chan *app.AppHealth, 200)
-	stop :=  make(chan struct{})
+	stop := make(chan struct{})
 	err := termui.Init()
 	if err != nil {
 		panic(err)
@@ -48,14 +41,8 @@ func main() {
 	apps := getApps()
 
 	for _, p := range apps {
-		fmt.Println(p.Name)
+		health_check.AddApp(&p)
 	}
-
-	application := app.Application{Name: "Service Name", Url: "http://localhost:5000/api/ping"}
-	health_check.AddApp(&application)
-
-	//application2 := app.Application{Name: "omega2", Url: "http://employee-management.mongodb.cc/api/ping"}
-	//health_check.AddApp(&application2)
 
 	go health_check.Run(ch)
 	go Display(ch, stop)
@@ -64,15 +51,15 @@ func main() {
 
 func GetPar(app *app.AppHealth) *termui.Par {
 	if app.Err == nil {
-		par2 := termui.NewPar("\nStatus: Healthy \n" +  "Checked at: " + app.Timestamp.String() + "\nURL: " + app.URL)
+		par2 := termui.NewPar("\nStatus: Healthy \n" + "Checked at: " + app.Timestamp.String() + "\nURL: " + app.URL)
 		par2.Height = 6
 		par2.Width = 60
 		par2.Y = 4
 		par2.BorderLabel = "Application: " + app.Name + " "
 		par2.BorderFg = termui.ColorYellow
 		return par2
-	}else {
-		par2 := termui.NewPar("\nStatus: Unhealthy \n" +  "Checked at: " + app.Timestamp.String() + "\nURL: " + app.URL)
+	} else {
+		par2 := termui.NewPar("\nStatus: Unhealthy \n" + "Checked at: " + app.Timestamp.String() + "\nURL: " + app.URL)
 		par2.Height = 6
 		par2.Width = 60
 		par2.Y = 4
@@ -84,22 +71,21 @@ func GetPar(app *app.AppHealth) *termui.Par {
 
 }
 
-
 func Display(ch chan *app.AppHealth, stop chan struct{}) {
 	paraMap := make(map[string]*termui.Par)
 	for {
 		var app *app.AppHealth
 		select {
-		case <- stop:
+		case <-stop:
 			break
-		case app = <- ch:
+		case app = <-ch:
 		}
 
 		paraMap[app.Name] = GetPar(app)
 
 		v := make([]*termui.Par, len(paraMap))
 		idx := 0
-		for  _, value := range paraMap {
+		for _, value := range paraMap {
 			v[idx] = value
 			idx++
 		}
